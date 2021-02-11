@@ -11,7 +11,7 @@ abstract class Connection{
     public static function getconn(){
 
         if(!self::$conn){
-        self::$conn = new \PDO("mysql: host=localhost dbname=bd-sist-login",'root','');
+        self::$conn = new \PDO("mysql: host=localhost dbname=bd-sist-login",'root','135967');
             
         }
 

@@ -1,40 +1,66 @@
 <?php
 
-    class Core{
+	class Core
+	{
+		private $url;
 
-        private $url;
-        private $controller;
-        private $method = 'index';
-        private $params = array(0);
+		private $controller;
+		private $method = 'index';
+		private $params = array();
 
-        public function _construct(){
+		private $user;
 
-        }
-        public function start($request){
+		private $error;
 
-            if (isset($request['url'])){
-            $this->url = explode('/', $request['url']);
+		public function __construct()
+		{
+			$this->user = $_SESSION['usr'] ?? null;
+			$this->error = $_SESSION['msg_error'] ?? null;
 
-            $this->controller = ucfirst($this->url[0]).'controller';
-            array_shift($this->url);
+			if (isset($this->error)) {
+				if ($this->error['count'] === 0) {
+					$_SESSION['msg_error']['count']++;
+				} else {
+					unset($_SESSION['msg_error']);
+				}
+			}
+		}
 
-            if(isset($this->url[0]) && $this->url != ''){
-                $this->method = $this->url[0];
-                array_shift($this->url);
+		public function start($request)
+		{
+			if (isset($request['url'])){
+				$this->url = explode('/', $request['url']);
 
-                if (isset($this->url[0]) && $this->url != ''){
-                $this-> params = $this->url;
-                }
-            }
-            
-            }else {
-                $this->controller = 'logincontroller';
-                $this->method = 'index';
+				$this->controller = ucfirst($this->url[0]).'Controller';
+				array_shift($this->url);
 
-            }
+				if (isset($this->url[0]) && $this->url != '') {
+					$this->method = $this->url[0];
+					array_shift($this->url);
 
-            return call_user_func(array(new $this-> controller, $this-> method), $this->params);
-            //var_dump($this->controller, $this->method, $this-> params);
+					if (isset($this->url[0]) && $this->url != '') {
+						$this->params = $this->url;
+					}
+				}
+			}
+			
+			if ($this->user) {
+				$pg_permission = ['DashboardController'];
 
-        }
-    }
+				if (!isset($this->controller) || !in_array($this->controller, $pg_permission)) {
+					$this->controller = 'DashboardController';
+					$this->method = 'index';
+				}
+			} else {
+				$pg_permission = ['LoginController'];
+
+				if (!isset($this->controller) || !in_array($this->controller, $pg_permission)) {
+					$this->controller = 'LoginController';
+					$this->method = 'index';
+				}
+			}
+
+			return call_user_func(array(new $this->controller, $this->method), $this->params);
+			//var_dump($this->controller, $this->method, $this->params);
+		}
+	}

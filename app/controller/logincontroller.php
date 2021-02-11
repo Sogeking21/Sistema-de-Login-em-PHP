@@ -20,9 +20,10 @@
                 $Usar->setEmail($_POST['email']);
                 $Usar->setPassword($_POST['password']);
                 $Usar->validatelogin();
-                 
+
+                 header('location:http://localhost/Sistema-de-Login-em-PHP/login/dashdoard'); 
                 }catch(\Exception $e) {
-                header('location:http://localhost/Sistema-de-Login-em-PHP/login/check');
+                header('location:http://localhost/Sistema-de-Login-em-PHP/login');
             }
         }
     }
